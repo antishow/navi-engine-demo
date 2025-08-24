@@ -6,7 +6,7 @@ import './components/player';
 import './components/spinner';
 import './components/track-target';
 
-import * as Demo from './scenes/demo.js';
+import * as Demo from './scenes/demo2.js';
 
 if (import.meta.env.DEV) {
   import('navi-engine/debug');
