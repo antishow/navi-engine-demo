@@ -13,8 +13,6 @@ export const prefabs = [
 export const url = 'assets/scenes/demo.glb';
 export const name = 'Demo Scene';
 
-let panelWindow = null;
-
 export const onLoad = () => {
   rootScene.fog = new Fog(0x000000, 0, 50);
 
@@ -27,35 +25,24 @@ export const onLoad = () => {
     'MonkeyDoor.open',
     'MonkeyDoor.open/revealControlPanel',
     () => {
-      if (panelWindow) {
-        panelWindow.focus();
-        return;
-      }
-
-      panelWindow = window.open('', '', 'width=320,height=240');
-      panelWindow.addEventListener('beforeunload', () => panelWindow = null, { once: true });
-      window.addEventListener('beforeunload', () => panelWindow.close());
-
-      const panelTitle = panelWindow.document.createElement('title');
-      panelTitle.textContent = 'A Mysterious Control Panel';
-      panelWindow.document.head.append(panelTitle);
-
-      const panelForm = panelWindow.document.createElement('form');
-      const inputField = panelWindow.document.createElement('input');
+      const panelElement = document.createElement('dialog');
+      const panelForm = document.createElement('div');
+      const inputField = document.createElement('input');
       inputField.setAttribute('readonly', true);
 
-      const text = panelWindow.document.createElement('p');
+      const text = document.createElement('p');
       text.textContent = 'Oh wow a key code! This is just like one of my Immersive Simulation games! but I don\'t know the code... maybe I should just follow my heart.';
       panelForm.append(text);
 
-      const numberButtons = panelWindow.document.createElement('div');
+      const numberButtons = document.createElement('div');
       Object.assign(numberButtons.style, {
         display: 'grid',
         gridTemplateColumns: '1fr 1fr 1fr',
         direction: 'rtl'
       });
+
       for(let n=9; n>=0; n--) {
-        const button = panelWindow.document.createElement('button');
+        const button = document.createElement('button');
         button.textContent = `${n}`;
         button.onclick = (e) => {
           e.preventDefault();
@@ -66,25 +53,27 @@ export const onLoad = () => {
       }
       panelForm.append(numberButtons);
 
-      const submitButton = panelWindow.document.createElement('input');
-      submitButton.setAttribute('type', 'submit');
-      submitButton.setAttribute('value', 'GO');
-      panelForm.append(inputField, submitButton);
-      panelWindow.document.body.append(panelForm);
+      const submitButton = document.createElement('button');
+      submitButton.textContent = 'GO';
 
-      panelForm.addEventListener('submit', (e) => {
-        if (e.submitter !== submitButton) {
-          e.preventDefault();
-          return;
+      panelForm.append(inputField, submitButton);
+      panelElement.append(panelForm);
+      document.body.append(panelElement);
+      panelElement.showModal();
+
+      submitButton.addEventListener('click', (e) => {
+        if (e.target !== submitButton) {
+          return false;
         }
         
         if (inputField.value === '0451') {
+          console.log('money door open!');
           monkeyDoor.visible = false;
           world.removeBody(monkeyDoor.body);
-          panelWindow.close();
         }
 
-        e.preventDefault();
+        panelElement.close();
+        document.body.removeChild(panelElement);
       });
     }
   );
