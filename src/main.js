@@ -16,6 +16,8 @@ if (import.meta.env.DEV) {
 import './style.css';
 document.body.appendChild(renderer.domElement);
 
+import { gsap } from 'gsap';
+
 addAction(
   'gltf.ready',
   'gltf.ready/titleCard',
@@ -31,6 +33,13 @@ addAction(
     titleCard.classList.add('title-card');
     titleCard.textContent = sceneName;
     document.body.append(titleCard);
+
+    gsap.fromTo(titleCard, { opacity: 1.0 }, { 
+      opacity: 0,
+      duration: 2.0,
+      delay: 4.0,
+      onComplete: () => titleCard.remove(),
+    });
   }
 );
 
